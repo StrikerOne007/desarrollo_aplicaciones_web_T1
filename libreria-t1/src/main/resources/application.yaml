@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: libreria-t1
+  datasource:
+    url: jdbc:mysql://localhost:3306/db_libreria
+    username: root
+#    password: Jorgeluis2424@        #contraseña
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+server:
+  port: 8080
