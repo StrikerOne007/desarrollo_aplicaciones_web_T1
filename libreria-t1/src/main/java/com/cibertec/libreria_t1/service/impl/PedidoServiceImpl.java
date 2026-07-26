@@ -15,6 +15,7 @@ import com.cibertec.libreria_t1.repository.EmpleadoRepository;
 import com.cibertec.libreria_t1.repository.LibroRepository;
 import com.cibertec.libreria_t1.repository.PedidoRepository;
 import com.cibertec.libreria_t1.service.PedidoService;
+import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,17 +30,20 @@ public class PedidoServiceImpl implements PedidoService {
     private final EmpleadoRepository empleadoRepository;
     private final LibroRepository libroRepository;
     private final PedidoMapper pedidoMapper;
+    private final EntityManager entityManager;
 
     public PedidoServiceImpl(PedidoRepository pedidoRepository,
                              ClienteRepository clienteRepository,
                              EmpleadoRepository empleadoRepository,
                              LibroRepository libroRepository,
-                             PedidoMapper pedidoMapper) {
+                             PedidoMapper pedidoMapper,
+                             EntityManager entityManager) {
         this.pedidoRepository = pedidoRepository;
         this.clienteRepository = clienteRepository;
         this.empleadoRepository = empleadoRepository;
         this.libroRepository = libroRepository;
         this.pedidoMapper = pedidoMapper;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -66,7 +70,12 @@ public class PedidoServiceImpl implements PedidoService {
         Empleado empleado = empleadoRepository.findById(request.getEmpleadoId())
                 .orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado"));
 
+        // 1. Persistimos el pedido primero (aún sin detalles ni total).
         Pedido pedido = new Pedido(cliente, empleado);
+        pedidoRepository.save(pedido);
+        entityManager.flush(); // fuerza el INSERT → pedido.getId() queda asignado
+
+        // 2. Agregamos los libros al pedido.
         BigDecimal total = BigDecimal.ZERO;
 
         for (DetallePedidoRequest item : request.getItems()) {
@@ -86,8 +95,9 @@ public class PedidoServiceImpl implements PedidoService {
             total = total.add(detalle.getSubtotal());
         }
 
+        // 3. Seteamos el total y volvemos a guardar para persistir los detalles.
         pedido.setTotal(total);
-        pedidoRepository.save(pedido); // cascade ALL persiste los detalles
+        pedidoRepository.save(pedido);
         return pedidoMapper.toResponse(pedido);
     }
 }
