@@ -1,68 +1,64 @@
 package com.cibertec.libreria_t1.controller;
 
 import com.cibertec.libreria_t1.dto.DetallePedidoRequest;
-import com.cibertec.libreria_t1.model.Cliente;
-import com.cibertec.libreria_t1.model.Empleado;
-import com.cibertec.libreria_t1.repository.ClienteRepository;
-import com.cibertec.libreria_t1.repository.EmpleadoRepository;
-import com.cibertec.libreria_t1.repository.LibroRepository;
+import com.cibertec.libreria_t1.dto.PedidoRequest;
+import com.cibertec.libreria_t1.service.ClienteService;
+import com.cibertec.libreria_t1.service.EmpleadoService;
+import com.cibertec.libreria_t1.service.LibroService;
 import com.cibertec.libreria_t1.service.PedidoService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Collections;
-import java.util.List;
 
 @Controller
 @RequestMapping("/pedidos")
 public class PedidoController {
 
     private final PedidoService pedidoService;
-    private final ClienteRepository clienteRepository;
-    private final EmpleadoRepository empleadoRepository;
-    private final LibroRepository libroRepository;
+    private final ClienteService clienteService;
+    private final EmpleadoService empleadoService;
+    private final LibroService libroService;
 
     public PedidoController(PedidoService pedidoService,
-                            ClienteRepository clienteRepository,
-                            EmpleadoRepository empleadoRepository,
-                            LibroRepository libroRepository) {
+                            ClienteService clienteService,
+                            EmpleadoService empleadoService,
+                            LibroService libroService) {
         this.pedidoService = pedidoService;
-        this.clienteRepository = clienteRepository;
-        this.empleadoRepository = empleadoRepository;
-        this.libroRepository = libroRepository;
+        this.clienteService = clienteService;
+        this.empleadoService = empleadoService;
+        this.libroService = libroService;
     }
 
     @GetMapping
     public String listar(Model model) {
-        model.addAttribute("pedidos", pedidoService.listarTodos());
-        return "inicio";
+        model.addAttribute("pedidos", pedidoService.listar());
+        return "pedidos/lista";
     }
 
     @GetMapping("/nuevo")
     public String formularioNuevo(Model model) {
-        model.addAttribute("clientes", clienteRepository.findAll());
-        model.addAttribute("empleados", empleadoRepository.findAll());
-        model.addAttribute("libros", libroRepository.findAll());
-        return "nuevo_pedido";
+        PedidoRequest pedido = new PedidoRequest();
+        pedido.getItems().add(new DetallePedidoRequest()); // una fila inicial
+        model.addAttribute("pedido", pedido);
+        model.addAttribute("clientes", clienteService.listar());
+        model.addAttribute("empleados", empleadoService.listar());
+        model.addAttribute("libros", libroService.listar());
+        return "pedidos/nuevo";
     }
 
     @PostMapping
-    public String registrar(@RequestParam Long clienteId,
-                            @RequestParam Long empleadoId,
-                            @RequestParam Long libroId,
-                            @RequestParam Integer cantidad) {
-
-        Cliente cliente = clienteRepository.findById(clienteId)
-                .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
-        Empleado empleado = empleadoRepository.findById(empleadoId)
-                .orElseThrow(() -> new IllegalArgumentException("Empleado no encontrado"));
-
-        List<DetallePedidoRequest> items = Collections.singletonList(
-                new DetallePedidoRequest(libroId, cantidad)
-        );
-
-        pedidoService.registrarPedido(cliente, empleado, items);
+    public String registrar(@Valid @ModelAttribute("pedido") PedidoRequest request,
+                            BindingResult result,
+                            Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("clientes", clienteService.listar());
+            model.addAttribute("empleados", empleadoService.listar());
+            model.addAttribute("libros", libroService.listar());
+            return "pedidos/nuevo";
+        }
+        pedidoService.registrar(request);
         return "redirect:/pedidos";
     }
 }

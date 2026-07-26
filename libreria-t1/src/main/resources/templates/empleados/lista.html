@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Librería - Empleados</title>
+</head>
+<body>
+<h1>Empleados registrados</h1>
+
+<a th:href="@{/empleados/nuevo}">Registrar nuevo empleado</a>
+
+<table border="1" cellpadding="8">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nombres</th>
+        <th>Apellidos</th>
+        <th>DNI</th>
+        <th>Teléfono</th>
+        <th>Cargo</th>
+        <th>Fecha ingreso</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="empleado : ${empleados}">
+        <td th:text="${empleado.id}"></td>
+        <td th:text="${empleado.nombres}"></td>
+        <td th:text="${empleado.apellidos}"></td>
+        <td th:text="${empleado.numeroDocumento}"></td>
+        <td th:text="${empleado.telefono}"></td>
+        <td th:text="${empleado.cargo}"></td>
+        <td th:text="${empleado.fechaIngreso}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

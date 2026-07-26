@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Error</title>
+</head>
+<body>
+<h1>Ups, hubo un problema</h1>
+<p th:text="${error}" style="color:red">Mensaje de error</p>
+
+<ul>
+    <li><a th:href="@{/libros}">Libros</a></li>
+    <li><a th:href="@{/clientes}">Clientes</a></li>
+    <li><a th:href="@{/empleados}">Empleados</a></li>
+    <li><a th:href="@{/pedidos}">Pedidos</a></li>
+</ul>
+</body>
+</html>

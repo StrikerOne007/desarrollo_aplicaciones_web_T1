@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Librería - Libros</title>
+</head>
+<body>
+<h1>Libros registrados</h1>
+
+<a th:href="@{/libros/nuevo}">Registrar nuevo libro</a>
+
+<table border="1" cellpadding="8">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>ISBN</th>
+        <th>Título</th>
+        <th>Autor</th>
+        <th>Precio</th>
+        <th>Stock</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="libro : ${libros}">
+        <td th:text="${libro.id}"></td>
+        <td th:text="${libro.isbn}"></td>
+        <td th:text="${libro.titulo}"></td>
+        <td th:text="${libro.autor}"></td>
+        <td th:text="${libro.precio}"></td>
+        <td th:text="${libro.stock}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nuevo Pedido</title>
+</head>
+<body>
+<h1>Registrar nuevo pedido</h1>
+
+<form th:action="@{/pedidos}" th:object="${pedido}" method="post">
+
+    <label>Cliente:</label>
+    <select th:field="*{clienteId}" required>
+        <option value="">-- Seleccione --</option>
+        <option th:each="c : ${clientes}" th:value="${c.id}"
+                th:text="${c.nombres + ' ' + c.apellidos}"></option>
+    </select>
+    <span th:if="${#fields.hasErrors('clienteId')}" th:errors="*{clienteId}" style="color:red"></span>
+    <br><br>
+
+    <label>Empleado:</label>
+    <select th:field="*{empleadoId}" required>
+        <option value="">-- Seleccione --</option>
+        <option th:each="e : ${empleados}" th:value="${e.id}"
+                th:text="${e.nombres + ' ' + e.apellidos}"></option>
+    </select>
+    <span th:if="${#fields.hasErrors('empleadoId')}" th:errors="*{empleadoId}" style="color:red"></span>
+    <br><br>
+
+    <h3>Libros del pedido</h3>
+    <table id="tabla-items" border="1" cellpadding="6">
+        <thead>
+        <tr>
+            <th>Libro</th>
+            <th>Cantidad</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item, stat : ${pedido.items}">
+            <td>
+                <select th:name="|items[${stat.index}].libroId|" required>
+                    <option value="">-- Seleccione --</option>
+                    <option th:each="l : ${libros}" th:value="${l.id}"
+                            th:text="${l.titulo + ' (S/ ' + l.precio + ')'}"
+                            th:selected="${item.libroId != null and item.libroId == l.id}"></option>
+                </select>
+            </td>
+            <td>
+                <input type="number" min="1" th:name="|items[${stat.index}].cantidad|"
+                       th:value="${item.cantidad}" required/>
+            </td>
+            <td>
+                <button type="button" onclick="this.closest('tr').remove()">Quitar</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <span th:if="${#fields.hasErrors('items')}" th:errors="*{items}" style="color:red"></span>
+    <br>
+
+    <button type="button" onclick="agregarFila()">+ Añadir libro</button>
+    <br><br>
+
+    <button type="submit">Registrar pedido</button>
+</form>
+
+<template id="fila-plantilla">
+    <tr>
+        <td>
+            <select name="items[INDEX].libroId" required>
+                <option value="">-- Seleccione --</option>
+                <option th:each="l : ${libros}" th:value="${l.id}"
+                        th:text="${l.titulo + ' (S/ ' + l.precio + ')'}"></option>
+            </select>
+        </td>
+        <td>
+            <input type="number" min="1" name="items[INDEX].cantidad" required/>
+        </td>
+        <td>
+            <button type="button" onclick="this.closest('tr').remove()">Quitar</button>
+        </td>
+    </tr>
+</template>
+
+<script>
+    function agregarFila() {
+        const tbody = document.querySelector('#tabla-items tbody');
+        const index = tbody.children.length;
+        const html = document.getElementById('fila-plantilla').innerHTML.replace(/INDEX/g, index);
+        tbody.insertAdjacentHTML('beforeend', html);
+    }
+</script>
+
+<br>
+<a th:href="@{/pedidos}">Volver a la lista</a>
+</body>
+</html>

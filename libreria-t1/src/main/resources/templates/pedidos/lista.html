@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Librería - Pedidos</title>
+</head>
+<body>
+<h1>Pedidos registrados</h1>
+
+<a th:href="@{/pedidos/nuevo}">Registrar nuevo pedido</a>
+
+<table border="1" cellpadding="8">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>Empleado</th>
+        <th>Fecha</th>
+        <th>Total</th>
+        <th>Estado</th>
+        <th>Libros</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="pedido : ${pedidos}">
+        <td th:text="${pedido.id}"></td>
+        <td th:text="${pedido.cliente}"></td>
+        <td th:text="${pedido.empleado}"></td>
+        <td th:text="${pedido.fecha}"></td>
+        <td th:text="${pedido.total}"></td>
+        <td th:text="${pedido.estado}"></td>
+        <td>
+            <ul>
+                <li th:each="detalle : ${pedido.detalles}"
+                    th:text="${detalle.libro} + ' x' + ${detalle.cantidad} + ' (S/ ' + ${detalle.subtotal} + ')'"></li>
+            </ul>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nuevo Cliente</title>
+</head>
+<body>
+<h1>Registrar nuevo cliente</h1>
+
+<form th:action="@{/clientes}" th:object="${cliente}" method="post">
+
+    <label>Nombres:</label>
+    <input type="text" th:field="*{nombres}"/>
+    <span th:if="${#fields.hasErrors('nombres')}" th:errors="*{nombres}" style="color:red"></span>
+    <br><br>
+
+    <label>Apellidos:</label>
+    <input type="text" th:field="*{apellidos}"/>
+    <span th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}" style="color:red"></span>
+    <br><br>
+
+    <label>DNI:</label>
+    <input type="text" maxlength="8" th:field="*{numeroDocumento}"/>
+    <span th:if="${#fields.hasErrors('numeroDocumento')}" th:errors="*{numeroDocumento}" style="color:red"></span>
+    <br><br>
+
+    <label>Teléfono:</label>
+    <input type="text" th:field="*{telefono}"/>
+    <br><br>
+
+    <label>Email:</label>
+    <input type="email" th:field="*{email}"/>
+    <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red"></span>
+    <br><br>
+
+    <label>Dirección:</label>
+    <input type="text" th:field="*{direccion}"/>
+    <br><br>
+
+    <button type="submit">Registrar</button>
+</form>
+
+<br>
+<a th:href="@{/clientes}">Volver a la lista</a>
+</body>
+</html>
